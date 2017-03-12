@@ -25,7 +25,9 @@ function setup() {
 	for (var i = 0; i < 5; i++) {
 		asteroids.push(new Asteroid());
 	}
-
+	
+	ships.myself = ship;
+	
 	//connecting client & server sockets
 	socket = io('http://localhost:3000');
 		
@@ -131,11 +133,16 @@ function draw() {
 	}
 
 	console.log(lasers.length);
-
+	
 	ship.render();
 	ship.turn();
 	ship.update();
 	ship.edges();
+	
+	for( key in ships){
+		ships[key].render();
+		//console.log(ships[key].render);
+	}
 }
 
 //Library in p5.js

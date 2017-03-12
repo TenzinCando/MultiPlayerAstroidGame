@@ -15,9 +15,8 @@ function Ship(otherShipColor) {
   this.isBoosting = false;
   
   //new color ship everytime it loads
-  console.log(otherShipColor);
   this.color = otherShipColor || [random(255), random(255), random(255)];
-  console.log(color);
+  
   this.boosting = function(b) {
     this.isBoosting = b;
   }
