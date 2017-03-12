@@ -1,0 +1,23 @@
+{
+  "name": "firstP5Project",
+  "version": "1.0.0",
+  "description": "first p5 project with node.js",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.15.2",
+    "require": "^2.4.20",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "p5.js",
+    "node.js",
+    "aws-sdk"
+  ],
+  "author": "Tenzin Khando",
+  "license": "ISC"
+}
