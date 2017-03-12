@@ -6,8 +6,8 @@
 // Modified Author: Tenzin Khando
 // Modified Date: 3/11/2017
 
-function Ship() {
-  this.pos = createVector(width / 2, height / 2);
+function Ship(otherShipColor) {
+  this.pos = createVector(width / 2, height/ 2);
   this.r = 20;
   this.heading = 0;
   this.rotation = 0;
@@ -15,8 +15,9 @@ function Ship() {
   this.isBoosting = false;
   
   //new color ship everytime it loads
-  this.color = [random(255), random(255), random(255)];
-
+  console.log(otherShipColor);
+  this.color = otherShipColor || [random(255), random(255), random(255)];
+  console.log(color);
   this.boosting = function(b) {
     this.isBoosting = b;
   }

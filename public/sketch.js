@@ -25,7 +25,7 @@ function setup() {
 	for (var i = 0; i < 5; i++) {
 		asteroids.push(new Asteroid());
 	}
-	
+
 	//connecting client & server sockets
 	socket = io('http://localhost:3000');
 		
@@ -35,9 +35,11 @@ function setup() {
 	socket.on('mouse', newDrawing);
 	
 	socket.on('sendShip', createShips);
+	
+	
 }
 
-//saving ship attributes & sending to other clients
+//saving 1 ship attributes & sending to other clients
 function sendMyShip(){
 	shipAttr[socket.id] = {
 		'isBoosting': ship.isBoosting,
@@ -45,7 +47,8 @@ function sendMyShip(){
 		'r': ship.r,
 		'heading': ship.heading,
 		'rotation': ship.rotation,
-		'vel': [ship.vel.x, ship.vel.y] 		
+		'vel': [ship.vel.x, ship.vel.y],
+		'color': ship.color
 	};
 	
 	//console.log(shipAttr);
@@ -56,11 +59,14 @@ function sendMyShip(){
 function createShips(shipData){
 	
 	for(key in shipData){
-		// //console.log(shipAttr.key);
+		//console.log(shipAttr.key);
 		// if(shipAttr.key === undefined){
-			shipAttr.key = shipData.key;
+		shipAttr[key] = shipData[key];
+		//console.log(shipData[key].color);
+		ships.key = new Ship(shipData[key].color);
 		// }
 	}
+	
 	//shipAttr[shipData.socket.id] = shipData.socket.id;
 	//console.log(shipAttr);
 }
@@ -93,6 +99,8 @@ function mouseDragged(){
 
 function draw() {
 	background(51);
+	
+	
 	for (var i = 0; i < asteroids.length; i++) {
 		// if (ship.hits(asteroids[i])) {
 			// console.log('ooops!');
