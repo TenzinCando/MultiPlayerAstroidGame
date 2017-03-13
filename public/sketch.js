@@ -12,7 +12,7 @@ var lasers = [];
 var socket;
 var shipAttr = {};
 var ships = {};
-
+var totalShips;
 //Triggers on each new load
 function setup() {
 	//canvas size
@@ -25,21 +25,19 @@ function setup() {
 	for (var i = 0; i < 5; i++) {
 		asteroids.push(new Asteroid());
 	}
-	
-	ships.myself = ship;
+	totalShips = 1;
 	
 	//connecting client & server sockets
 	socket = io('http://localhost:3000');
 		
 	socket.on('connect', sendMyShip);
+	socket.on('shipsFromServer', createShips);
 	
 	//Call newDrawing if server sends a mouse event
 	socket.on('mouse', newDrawing);
-	
-	socket.on('sendShip', createShips);
-	
-	
+		
 }
+
 
 //saving 1 ship attributes & sending to other clients
 function sendMyShip(){
@@ -53,6 +51,8 @@ function sendMyShip(){
 		'color': ship.color
 	};
 	
+	ships[socket.id] = ship;
+	
 	//console.log(shipAttr);
 	socket.emit('newShip', shipAttr);
 }
@@ -65,10 +65,12 @@ function createShips(shipData){
 		// if(shipAttr.key === undefined){
 		shipAttr[key] = shipData[key];
 		//console.log(shipData[key].color);
-		ships.key = new Ship(shipData[key].color);
+		ships[key] = new Ship(shipData[key].color);
+		shipAttr
 		// }
 	}
 	
+	socket.on('connect', sendMyShip);
 	//shipAttr[shipData.socket.id] = shipData.socket.id;
 	//console.log(shipAttr);
 }
@@ -102,7 +104,6 @@ function mouseDragged(){
 function draw() {
 	background(51);
 	
-	
 	for (var i = 0; i < asteroids.length; i++) {
 		// if (ship.hits(asteroids[i])) {
 			// console.log('ooops!');
@@ -132,8 +133,14 @@ function draw() {
 		}
 	}
 
-	console.log(lasers.length);
+	//console.log(lasers.length);
 	
+	//Sending existing user info back to the new user
+	if(totalShips !== Object.keys(shipAttr).length){
+		//console.log(totalShips);
+		socket.emit('newShip', shipAttr);
+		totalShips = Object.keys(shipAttr).length;
+	}
 	ship.render();
 	ship.turn();
 	ship.update();

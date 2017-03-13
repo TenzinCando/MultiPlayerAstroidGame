@@ -9,6 +9,7 @@ app.use(express.static('public'));		//the folder to host to the website. public 
 
 
 console.log("My socket server is running");
+var connections = [];
 
 //Attach Input & Output to the server
 var io = socket(server);
@@ -18,13 +19,23 @@ io.sockets.on('connection', newConnect);
 
 function newConnect(socket) {
 	console.log('New Connection: ' + socket.id);
+	connections.push(socket.id);
+	console.log('Connected: %s ', connections.length);
 	
-	//listens for shipAttr from new user and send to all other clients
+	//Disconnect
+	socket.on('disconnect', function(data){
+		connections.splice(connections.indexOf(socket), 1);
+		console.log('Disconnected... %s left', connections.length);
+	});
+	
+	
+	//listens for newship event from new user and send to all other clients
 	socket.on('newShip', newShipAttr);
 	
 	function newShipAttr(data){
-		console.log(data);
-		socket.broadcast.emit('sendShip', data);
+		//console.log(data);
+		socket.broadcast.emit('shipsFromServer', data);
+		//io.sockets.emit('sendShip', data);
 	}
 	
 	//listens for mouseEvent from the new user and calls mouseMessage
