@@ -26,6 +26,7 @@ function newConnect(socket) {
 	socket.on('disconnect', function(data){
 		connections.splice(connections.indexOf(socket), 1);
 		console.log('Disconnected... %s left', connections.length);
+		socket.broadcast.emit('leftGame', socket.id);
 	});
 	
 	
@@ -34,7 +35,10 @@ function newConnect(socket) {
 	
 	function newShipAttr(data){
 		//console.log(data);
+		//send shipFromServer event to all clients except the sender
 		socket.broadcast.emit('shipsFromServer', data);
+
+		//send sendShip event to all clients and the sender		
 		//io.sockets.emit('sendShip', data);
 	}
 	
