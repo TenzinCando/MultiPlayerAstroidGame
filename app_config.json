@@ -1,0 +1,6 @@
+{ 
+  "AWS_REGION": "us-west-2",
+  "QUERY_TABLE": "Asteroid_Game_Ships",
+  "BUCKET_NAME": "dufflespaceships",
+  "SNS_MESSAGE": "arn:aws:sns:us-west-2:877485355744:signup-notifications"
+}

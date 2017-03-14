@@ -4,6 +4,7 @@
   "description": "first p5 project with node.js",
   "main": "server.js",
   "dependencies": {
+    "aws-sdk": "*",
     "express": "^4.15.2",
     "require": "^2.4.20",
     "socket.io": "^1.7.3"
