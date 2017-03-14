@@ -34,21 +34,11 @@ function newConnect(socket) {
 	socket.on('newShip', newShipAttr);
 	
 	function newShipAttr(data){
-		//console.log(data);
 		//send shipFromServer event to all clients except the sender
 		socket.broadcast.emit('shipsFromServer', data);
-
+		
 		//send sendShip event to all clients and the sender		
 		//io.sockets.emit('sendShip', data);
 	}
-	
-	//listens for mouseEvent from the new user and calls mouseMessage
-	socket.on('mouse', mouseMessage);
-	
-	function mouseMessage(data){
-		//send the mouse event to all other connected sockets
-		socket.broadcast.emit('mouse', data);
-		//io.sockets.emit('mouse', data);
-		//console.log(data);
-	}
+
 }

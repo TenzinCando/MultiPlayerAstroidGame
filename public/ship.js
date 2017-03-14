@@ -13,9 +13,23 @@ function Ship(otherShipColor) {
   this.rotation = 0;
   this.vel = createVector(0, 0);
   this.isBoosting = false;
+  this.moved = false;
+  this.socketId;
   
   //new color ship everytime it loads
   this.color = otherShipColor || [random(255), random(255), random(255)];
+  
+  this.getAttr = {
+	'socketId': this.socketId,
+	'isBoosting': this.isBoosting,
+	'pos': [this.pos.x, this.pos.y],
+	'r': this.r,
+	'heading': this.heading,
+	'rotation': this.rotation,
+	'vel': [this.vel.x, this.vel.y],
+	'color': this.color,
+	'moved': this.moved
+  };
   
   this.boosting = function(b) {
     this.isBoosting = b;
