@@ -33,10 +33,7 @@ function setup() {
 		
 	socket.on('connect', sendMyShip);
 	socket.on('shipsFromServer', createShips);
-	
-	//Call newDrawing if server sends a mouse event
-	socket.on('mouse', newDrawing);
-	
+		
 	socket.on('leftGame', function(socketID){
 		//console.log(socketID);
 		console.log(ships[socketID]);
@@ -82,32 +79,6 @@ function createShips(shipData){
 	//shipAttr[shipData.socket.id] = shipData.socket.id;
 	//console.log(shipAttr);
 }
-
-function newDrawing(mouseData){
-	noStroke();
-	fill(255, 0, 100);
-	//attach circle to mouse location
-	ellipse(mouseData.x, mouseData.y, 10,10);
-}
-
-function mouseDragged(){
-	noStroke();
-	fill(255);
-	//attach circle to mouse location
-	ellipse(mouseX, mouseY, 10,10);
-	
-	//console.log(mouseX + ',' + mouseY);
-	
-	//save mouse location once dragged
-	var mouseData = {
-		x: mouseX,
-		y: mouseY
-	};
-	
-	//send an event called mouse to the server with mouseData
-	socket.emit('mouse', mouseData);
-}
-
 
 function draw() {
 	background(51);
