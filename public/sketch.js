@@ -42,21 +42,39 @@ function setup() {
 			ships[shipData.socketID] = new Ship(shipData.color, shipData.socketID);
 			totalShips++;
 			sendMyShip();
-		}		
+		}	
 	});
+	
+	//update all ships that move and display them
+	socket.on('shipMoved', function(shipMoves){
+		ship = ships[shipMoves.socketID];
+		console.log(ship);
+		ship.setRotation(shipMoves.rotation);
+		ship.boosting(shipMoves.boosting);
 		
+		// ship.render();
+		// ship.turn();
+		// ship.update();
+		// ship.edges();
+		//console.log(ships[key].render);		
+	});
+	
 	socket.on('leftGame', function(socketID){
 		console.log(socketID);
 		console.log(ships[socketID]);
 		//ships[socketID] = ;
 		delete ships[socketID];
+		if(ship.socketID === socketID) delete ship;
 		//console.log(ships);
 	});
+	
 	
 }
 
 function sendMyShip(){
 	var shipAttr = {
+		'posX': ships.myself.pos[0],
+		'posY': ships.myself.pos[1],
 		'color': ships.myself.color,
 		'socketID': socket.id
 	};
@@ -96,10 +114,16 @@ function draw() {
 	}
 
 	//console.log(lasers.length);
+	if(ship !== undefined){
+		ship.render();
+		ship.turn();
+		ship.update();
+		ship.edges();
+	}
 	
 	for( key in ships){
 		//if(key !== 'myself')	ships[key].render();
-		if(key !== undefined){
+		if(ship === undefined || key !== ship.socketID){
 			ships[key].render();	//display ship
 			ships[key].turn();		//rotate ship
 			ships[key].update();	//move ship
@@ -113,7 +137,8 @@ function draw() {
 function keyReleased() {
 	ships.myself.setRotation(0);
 	ships.myself.boosting(false);
-	//socket.emit(
+	
+	sendMovementToServer();
 }
 
 //Library in p5.js
@@ -129,5 +154,16 @@ function keyPressed() {
 		ships.myself.boosting(true);
 	}
 	
-	//socket
+	sendMovementToServer();
+}
+
+//send my movement to all other 
+function sendMovementToServer(){
+	var sendMovement = {
+		'rotation': ships.myself.rotation,
+		'boosting': ships.myself.isBoosting,
+		'socketID': socket.id
+	}
+	console.log(sendMovement);
+	socket.emit('shipMovement', sendMovement);
 }

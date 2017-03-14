@@ -39,5 +39,10 @@ function newConnect(socket) {
 		//send sendShip event to all clients and the sender		
 		//io.sockets.emit('sendShip', data);
 	});
+	
+	socket.on('shipMovement', function(shipsMovementFromServer){
+		//console.log(shipsMovementFromServer);
+		socket.broadcast.emit('shipMoved', shipsMovementFromServer);
+	});
 
 }
