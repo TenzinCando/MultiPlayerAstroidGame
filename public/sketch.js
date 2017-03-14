@@ -13,6 +13,8 @@ var socket;
 var shipAttr = {};
 var ships = {};
 var totalShips;
+var asteroidInfo = {};	//asteroid info to send to other clients
+
 //Triggers on each new load
 function setup() {
 	//canvas size
@@ -23,9 +25,12 @@ function setup() {
 	//set up ships & astroids
 	//ship = new Ship();
 	ships.myself = new Ship();
+	
 	for (var i = 0; i < 5; i++) {
 		asteroids.push(new Asteroid());
+		//storeAsteroidInfo(i);
 	}
+	
 	totalShips = 1;
 	
 	//connecting client & server sockets
@@ -33,10 +38,33 @@ function setup() {
 	
 	//sending new ship Attr to all other clients
 	socket.on('connect', sendMyShip);
+	
+	socket.on('firstShipCreateAsteroid', function(){
+		//console.log('First Player');
 		
+		var asteroidInfo = {};
+		
+		for (var i = 0; i < 5; i++) {
+			asteroids.push(new Asteroid());
+			//console.log(asteroidInfo);
+			storeAsteroidInfo(i);
+		}
+		//console.log(asteroidInfo);
+		// socket.emit('sendAsteroids', asteroidInfo);
+	});
+	
+	//create the same asteroids for all other clients online
+	socket.on('asteroidFromServer', function(asteroidInformation){
+		console.log(asteroidInformation);
+		var tempPos = createVector(asteroidInformation.asteroidposition[0],asteroidInformation.asteroidposition[1]);
+		var tempAsteroids = asteroids.push(new Asteroid(tempPos, asteroidInformation.asteroidrotation));
+		console.log(tempAsteroids);
+	});
+	
 	//create new ships entering the battlefield
 	socket.on('shipsFromServer', function(shipData){
-		//console.log(shipData);
+		..console.log(shipData);
+		//console.log(asteroidsFromServer);
 		//only create new ship if it doesn't exist in 
 		if( (shipData.socketID in ships) === false){
 			ships[shipData.socketID] = new Ship(shipData.color, shipData.socketID);
@@ -45,7 +73,7 @@ function setup() {
 			ships[shipData.socketID].pos.x = shipData.posX * (width /shipData.windowX) ;
 			ships[shipData.socketID].pos.y = shipData.posY * (height /shipData.windowY);
 			ships[shipData.socketID].heading = shipData.direction;
-			console.log(ships[shipData.socketID]);
+			//console.log(ships[shipData.socketID]);
 			totalShips++;
 			sendMyShip();
 		}
@@ -54,7 +82,7 @@ function setup() {
 	//update all ships that move and display them
 	socket.on('shipMoved', function(shipMoves){
 		ship = ships[shipMoves.socketID];
-		console.log(ship);
+		//console.log(ship);
 		ship.setRotation(shipMoves.rotation);
 		ship.boosting(shipMoves.boosting);
 		
@@ -66,15 +94,25 @@ function setup() {
 	});
 	
 	socket.on('leftGame', function(socketID){
-		console.log(socketID);
-		console.log(ships[socketID]);
+		//console.log(socketID);
+		//console.log(ships[socketID]);
 		//ships[socketID] = ;
 		delete ships[socketID];
 		if(ship.socketID === socketID) delete ship;
 		//console.log(ships);
-	});
-	
-	
+	});	
+}
+
+function storeAsteroidInfo(index){
+	asteroidInfo = {
+		'asteroidposition': [asteroids[index].pos.x, asteroids[index].pos.y],
+		'asteroidrotation': asteroids[index].r,
+		'asteroidveolicty': [asteroids[index].vel.x, asteroids[index].vel.y],
+		'asteroidTotal': asteroids[index].total,
+		'asteroidOffset': asteroids[index].offset
+	};
+	//console.log(asteroidInfo);
+	socket.emit('sendAsteroid', asteroidInfo);
 }
 
 function sendMyShip(){
@@ -87,6 +125,7 @@ function sendMyShip(){
 		'color': ships.myself.color,
 		'socketID': socket.id
 	};
+	//console.log(asteroidInfo);
 	socket.emit('newShip', shipAttr);
 }
 
@@ -173,6 +212,6 @@ function sendMovementToServer(){
 		'boosting': ships.myself.isBoosting,
 		'socketID': socket.id
 	}
-	console.log(sendMovement);
+	//console.log(sendMovement);
 	socket.emit('shipMovement', sendMovement);
 }
