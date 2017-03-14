@@ -40,9 +40,15 @@ function setup() {
 		//only create new ship if it doesn't exist in 
 		if( (shipData.socketID in ships) === false){
 			ships[shipData.socketID] = new Ship(shipData.color, shipData.socketID);
+			console.log(shipData);
+
+			ships[shipData.socketID].pos.x = shipData.posX * (width /shipData.windowX) ;
+			ships[shipData.socketID].pos.y = shipData.posY * (height /shipData.windowY);
+			ships[shipData.socketID].heading = shipData.direction;
+			console.log(ships[shipData.socketID]);
 			totalShips++;
 			sendMyShip();
-		}	
+		}
 	});
 	
 	//update all ships that move and display them
@@ -73,8 +79,11 @@ function setup() {
 
 function sendMyShip(){
 	var shipAttr = {
-		'posX': ships.myself.pos[0],
-		'posY': ships.myself.pos[1],
+		'windowX': width,
+		'windowY': height,
+		'posX': ships.myself.pos.x,
+		'posY': ships.myself.pos.y,
+		'direction': ships.myself.heading,
 		'color': ships.myself.color,
 		'socketID': socket.id
 	};
