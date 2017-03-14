@@ -36,7 +36,7 @@ function setup() {
 		
 	//create new ships entering the battlefield
 	socket.on('shipsFromServer', function(shipData){
-		console.log(shipData);
+		//console.log(shipData);
 		//only create new ship if it doesn't exist in 
 		if( (shipData.socketID in ships) === false){
 			ships[shipData.socketID] = new Ship(shipData.color, shipData.socketID);
@@ -49,8 +49,7 @@ function setup() {
 		console.log(socketID);
 		console.log(ships[socketID]);
 		//ships[socketID] = ;
-		//delete ships[socketID];
-		//delete shipAttr[socketID];
+		delete ships[socketID];
 		//console.log(ships);
 	});
 	
