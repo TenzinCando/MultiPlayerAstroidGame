@@ -6,7 +6,7 @@
 // Modified Author: Tenzin Khando
 // Modified Date: 3/11/2017
 
-function Ship(otherShipColor) {
+function Ship(otherShipColor, socketID) {
   this.pos = createVector(width / 2, height/ 2);
   this.r = 20;
   this.heading = 0;
@@ -14,22 +14,16 @@ function Ship(otherShipColor) {
   this.vel = createVector(0, 0);
   this.isBoosting = false;
   this.moved = false;
-  this.socketId;
   
-  //new color ship everytime it loads
-  this.color = otherShipColor || [random(255), random(255), random(255)];
+  //new ship color for new clients
+  this.color = otherShipColor || [random(255), random(255), random(255)];	
   
-  this.getAttr = {
-	'socketId': this.socketId,
-	'isBoosting': this.isBoosting,
-	'pos': [this.pos.x, this.pos.y],
-	'r': this.r,
-	'heading': this.heading,
-	'rotation': this.rotation,
-	'vel': [this.vel.x, this.vel.y],
-	'color': this.color,
-	'moved': this.moved
-  };
+  //save socketID of other clients
+  this.socketID = socketID || '';
+  
+  this.moving = function(b){
+	  this.moved = b;
+  }
   
   this.boosting = function(b) {
     this.isBoosting = b;

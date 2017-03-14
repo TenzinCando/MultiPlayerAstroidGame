@@ -31,14 +31,13 @@ function newConnect(socket) {
 	
 	
 	//listens for newship event from new user and send to all other clients
-	socket.on('newShip', newShipAttr);
-	
-	function newShipAttr(data){
+	socket.on('newShip', function(newShipAttr){
+		//console.log(newShipAttr);
 		//send shipFromServer event to all clients except the sender
-		socket.broadcast.emit('shipsFromServer', data);
+		socket.broadcast.emit('shipsFromServer', newShipAttr);
 		
 		//send sendShip event to all clients and the sender		
 		//io.sockets.emit('sendShip', data);
-	}
+	});
 
 }

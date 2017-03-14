@@ -32,48 +32,36 @@ function setup() {
 	socket = io('http://localhost:3000');
 	
 	//sending new ship Attr to all other clients
-	socket.on('connect', function(){
-		//sending ship Attr to all other clients
-		ships.myself.socketId = socket.id;
-		socket.emit('newShip', ships.myself.getAttr);
+	socket.on('connect', sendMyShip);
+		
+	//create new ships entering the battlefield
+	socket.on('shipsFromServer', function(shipData){
+		console.log(shipData);
+		//only create new ship if it doesn't exist in 
+		if( (shipData.socketID in ships) === false){
+			ships[shipData.socketID] = new Ship(shipData.color, shipData.socketID);
+			totalShips++;
+			sendMyShip();
+		}		
 	});
-	socket.on('shipsFromServer', createShips);
 		
 	socket.on('leftGame', function(socketID){
-		//console.log(socketID);
+		console.log(socketID);
 		console.log(ships[socketID]);
-		delete ships[socketID];
+		//ships[socketID] = ;
+		//delete ships[socketID];
 		//delete shipAttr[socketID];
-		console.log(ships);
+		//console.log(ships);
 	});
 	
-		
 }
 
-function setAttr(socketID){
-	
-}
-
-
-//create new ships entering the battlefield
-function createShips(shipData){
-	//console.log(shipData);
-	//for(key in shipData){
-		//console.log(shipAttr.key);
-		//if(key !== socket.id){
-			//shipAttr[key] = shipData[key];
-			//console.log(shipData[key].color);
-			ships[shipData.socketId] = new Ship(shipData.color);
-		//}
-		// }
-	//}
-	//socket.emit('newShip', ships.myself.getAttr);
-	//socket.on('connect', function(){
-		//sending ship Attr to all other clients
-		//socket.emit('newShip', ships.myself.getAttr);
-	//});
-	//shipAttr[shipData.socket.id] = shipData.socket.id;
-	//console.log(shipAttr);
+function sendMyShip(){
+	var shipAttr = {
+		'color': ships.myself.color,
+		'socketID': socket.id
+	};
+	socket.emit('newShip', shipAttr);
 }
 
 function draw() {
@@ -110,23 +98,15 @@ function draw() {
 
 	//console.log(lasers.length);
 	
-	//Sending existing user info back to the new user
-	if(totalShips !== Object.keys(ships).length){
-		//console.log(totalShips);
-		for(key in ships){
-			//right of || only happens when key doesn't equal 'myself'
-			var temp = (key !== 'myself') || socket.emit('newShip', ships[key].getAttr);
-		}
-		totalShips = Object.keys(shipAttr).length;
-	}
-	
 	for( key in ships){
 		//if(key !== 'myself')	ships[key].render();
-		ships[key].render();
-		ships[key].turn();
-		ships[key].update();
-		ships[key].edges();
-		//console.log(ships[key].render);
+		if(key !== undefined){
+			ships[key].render();	//display ship
+			ships[key].turn();		//rotate ship
+			ships[key].update();	//move ship
+			ships[key].edges();		//check edge
+			//console.log(ships[key].render);
+		}
 	}
 }
 
@@ -134,7 +114,7 @@ function draw() {
 function keyReleased() {
 	ships.myself.setRotation(0);
 	ships.myself.boosting(false);
-	
+	//socket.emit(
 }
 
 //Library in p5.js
@@ -143,7 +123,7 @@ function keyPressed() {
 		lasers.push(new Laser(ships.myself.pos, ships.myself.heading));
 	} else if (keyCode == RIGHT_ARROW) {
 		ships.myself.setRotation(0.1);
-		//socket.on('connect', sendMyShip);
+		
 	} else if (keyCode == LEFT_ARROW) {
 		ships.myself.setRotation(-0.1);
 	} else if (keyCode == UP_ARROW) {
